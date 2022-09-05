@@ -1,0 +1,29 @@
+﻿@model List<Employee>
+<h2>List of Employees</h2>
+<h2 class="message">@TempData["Message"]</h2>
+<a asp-controller="Home" asp-action="Insert" class="LinkButton">Insert</a>
+<br />
+<br />
+<table border="1">
+    <tr>
+        <th>EmployeeID</th>
+        <th>EmployeeName</th>
+        <th>EmployeeLastName</th>
+        <th>Phone</th>
+        <th colspan=2>Actions</th>
+    </tr>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.EmployeeID</td>
+            <td>@item.EmployeeName</td>
+            <td>@item.EmployeeLastName</td>
+            <td>@item.Phone</td>
+            <td>
+                <a asp-controller="Home" asp-action="Delete" asp-route-id="@item.EmployeeID" class=Linkbuttons>Delete</a>
+                <a asp-controller="Home" asp-action="Update" asp-route-id="@item.EmployeeID" class=Linkbuttons>Update</a>
+                <a asp-controller="Home" asp-action="CreateQRCode" asp-route-id="@item.EmployeeID" class=Linkbuttons>ViewQR</a>
+            </td>
+        </tr>
+    }
+</table>
