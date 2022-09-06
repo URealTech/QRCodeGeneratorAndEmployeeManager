@@ -34,5 +34,9 @@ namespace QRCodeGeneratorAndEmployeeManager.Models
         [Column("encryptedData")]
         [Display(Name = "encryptedData")]
         public string? encryptedData { get; set; }
+
+        [Column("nonEncryptedData")]
+        [Display(Name = "nonEncryptedData")]
+        public string? nonEncryptedData { get; set; }
     }
 }
