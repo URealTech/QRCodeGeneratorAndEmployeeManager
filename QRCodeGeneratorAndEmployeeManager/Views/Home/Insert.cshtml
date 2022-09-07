@@ -38,7 +38,7 @@
             </div>
         </form>
 
-        <form asp-controller="Home" asp-action="InsertEncrypted" method="post">
+        @*<form asp-controller="Home" asp-action="InsertEncrypted" method="post">
             <div class="form-group">
                 <label asp-for="EmployeeName" class="control-label"></label>
                 <input asp-for="EmployeeName" class="form-control" />
@@ -64,9 +64,9 @@
             <br />
 
             <div class="form-group">
-                <img src="@ViewBag.QrCodeUri" class="img-thumbnail" />
+                <img src="@ViewBag.QrCodeUri1" class="img-thumbnail" />
             </div>
-        </form>
+        </form>*@
         <br />
         <h3 class="message">@ViewBag.Message</h3>
     </div>

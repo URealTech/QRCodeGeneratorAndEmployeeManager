@@ -125,6 +125,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             return View(model);
         }
 
+        /*
         public IActionResult InsertEncrypted()
         {
             FillUsers();
@@ -148,19 +149,19 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 #region IronBarcode
                 try
                 {
-                    GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(model.encryptedData, "github.png", 300);
-                    barcode.SetMargins(10);
-                    barcode.ChangeBarCodeColor(Color.Goldenrod);
-                    string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                    if (!Directory.Exists(path))
+                    GeneratedBarcode barcode1 = QRCodeWriter.CreateQrCodeWithLogo(model.encryptedData, "github.png", 300);
+                    barcode1.SetMargins(10);
+                    barcode1.ChangeBarCodeColor(Color.Goldenrod);
+                    string path1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
+                    if (!Directory.Exists(path1))
                     {
-                        Directory.CreateDirectory(path);
+                        Directory.CreateDirectory(path1);
                     }
-                    string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                    barcode.SaveAsPng(filePath);
-                    string fileName = Path.GetFileName(filePath);
-                    string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
-                    ViewBag.QRCodeUri = imageUrl;
+                    string filePath1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
+                    barcode1.SaveAsPng(filePath1);
+                    string fileName1 = Path.GetFileName(filePath1);
+                    string imageUrl1 = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName1;
+                    ViewBag.QRCodeUri = imageUrl1;
                 }
                 catch (Exception)
                 {
@@ -170,7 +171,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             }
             return View(model);
         }
-
+        */
 
         public IActionResult Update(int id)
         {
@@ -254,6 +255,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             return View(model);
         }
 
+        /*
         [HttpGet]
         public IActionResult CreateQRCodeEncrypted(int id)
         {
@@ -296,5 +298,6 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             }
             return View(model);
         }
+        */
     }
 }
