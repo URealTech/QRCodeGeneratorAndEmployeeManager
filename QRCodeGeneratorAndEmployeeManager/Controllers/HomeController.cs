@@ -11,7 +11,6 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
     public class HomeController : Controller
     {
         private static byte[] IV = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public string SymetricKey = "ePPhSSJIguIlaLys";
         public string qrCodeTextString;
         public string EmployeeData;
         public string EmployeeDataNon;
@@ -106,7 +105,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult Insert(Employee model)
+        public IActionResult Insert(Employee model, Key master)
         {
             FillUsers();
             if (ModelState.IsValid)
@@ -114,7 +113,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 db.EmployeeQRTable.Add(model);
 
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
 
         db.SaveChanges();
@@ -131,7 +130,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             return View(model);
         }
         [HttpPost]
-        public IActionResult Update(Employee model)
+        public IActionResult Update(Employee model, Key master)
         {
             FillUsers();
             if (ModelState.IsValid)
@@ -139,7 +138,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 db.EmployeeQRTable.Update(model);
 
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
                 db.SaveChanges();
                 ViewBag.Message = "Employee updated succesfully";
@@ -172,13 +171,13 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateQRCode(Employee model)
+        public IActionResult CreateQRCode(Employee model, Key master)
         {
             FillUsers();
             if (ModelState.IsValid)
             {
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
                 ViewBag.url = IronBarcodeQR(model.nonEncryptedData);
             }
