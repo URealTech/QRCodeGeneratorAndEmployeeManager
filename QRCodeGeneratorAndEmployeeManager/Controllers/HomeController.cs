@@ -60,6 +60,26 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             return Convert.ToBase64String(Encrypted);
         }
 
+        private string IronBarcodeQR(string dataText)
+        {
+
+                GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(dataText, "github.png", 300);
+                barcode.SetMargins(10);
+                barcode.ChangeBarCodeColor(Color.Goldenrod);
+                string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
+                barcode.SaveAsPng(filePath);
+                string fileName = Path.GetFileName(filePath);
+                string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
+                ViewBag.QRCodeUri = imageUrl;
+
+                return imageUrl;
+        }
+
         private void FillUsers()
         {
             List<SelectListItem> employees = (from c in db.EmployeeQRTable
@@ -99,33 +119,12 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
 
         db.SaveChanges();
                 ViewBag.Message = "Employee Inserted";
-                #region IronBarcode
-                try
-                {
-                    GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(model.nonEncryptedData, "github.png", 300);
-                    barcode.SetMargins(10);
-                    barcode.ChangeBarCodeColor(Color.Goldenrod);
-                    string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
-                    string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                    barcode.SaveAsPng(filePath);
-                    string fileName = Path.GetFileName(filePath);
-                    string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
-                    ViewBag.QRCodeUri = imageUrl;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                #endregion
+                ViewBag.QRCodeUri = IronBarcodeQR(model.nonEncryptedData);
             }
             return View(model);
         }
 
-        /*
+        
         public IActionResult InsertEncrypted()
         {
             FillUsers();
@@ -146,32 +145,11 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
 
                 db.SaveChanges();
                 ViewBag.Message = "Employee Inserted";
-                #region IronBarcode
-                try
-                {
-                    GeneratedBarcode barcode1 = QRCodeWriter.CreateQrCodeWithLogo(model.encryptedData, "github.png", 300);
-                    barcode1.SetMargins(10);
-                    barcode1.ChangeBarCodeColor(Color.Goldenrod);
-                    string path1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                    if (!Directory.Exists(path1))
-                    {
-                        Directory.CreateDirectory(path1);
-                    }
-                    string filePath1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                    barcode1.SaveAsPng(filePath1);
-                    string fileName1 = Path.GetFileName(filePath1);
-                    string imageUrl1 = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName1;
-                    ViewBag.QRCodeUri = imageUrl1;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                #endregion
+                ViewBag.QRCodeUri = IronBarcodeQR(model.encryptedData);
             }
             return View(model);
         }
-        */
+        
 
         public IActionResult Update(int id)
         {
@@ -229,33 +207,11 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
                 model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
-                #region IronBarcode
-                try
-                {
-                    GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(model.nonEncryptedData, "github.png", 300);
-                    barcode.SetMargins(10);
-                    barcode.ChangeBarCodeColor(Color.Goldenrod);
-                    string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
-                    string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                    barcode.SaveAsPng(filePath);
-                    string fileName = Path.GetFileName(filePath);
-                    string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
-                    ViewBag.QRCodeUri = imageUrl;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                #endregion
+                ViewBag.url = IronBarcodeQR(model.nonEncryptedData);
             }
             return View(model);
         }
 
-        /*
         [HttpGet]
         public IActionResult CreateQRCodeEncrypted(int id)
         {
@@ -273,31 +229,9 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
                 model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
-                #region IronBarcode
-                try
-                {
-                    GeneratedBarcode barcode1 = QRCodeWriter.CreateQrCodeWithLogo(model.encryptedData, "github.png", 300);
-                    barcode1.SetMargins(10);
-                    barcode1.ChangeBarCodeColor(Color.Goldenrod);
-                    string path1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                    if (!Directory.Exists(path1))
-                    {
-                        Directory.CreateDirectory(path1);
-                    }
-                    string filePath1 = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                    barcode1.SaveAsPng(filePath1);
-                    string fileName1 = Path.GetFileName(filePath1);
-                    string imageUrl1 = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName1;
-                    ViewBag.QRCodeUri1 = imageUrl1;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                #endregion
+                ViewBag.url = IronBarcodeQR(model.encryptedData);
             }
             return View(model);
         }
-        */
     }
 }
