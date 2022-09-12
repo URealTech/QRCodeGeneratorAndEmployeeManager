@@ -122,34 +122,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 ViewBag.QRCodeUri = IronBarcodeQR(model.nonEncryptedData);
             }
             return View(model);
-        }
-
-        
-        public IActionResult InsertEncrypted()
-        {
-            FillUsers();
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult InsertEncrypted(Employee model)
-        {
-            FillUsers();
-            if (ModelState.IsValid)
-            {
-                db.EmployeeQRTable.Add(model);
-
-                EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
-                model.nonEncryptedData = EmployeeData;
-
-                db.SaveChanges();
-                ViewBag.Message = "Employee Inserted";
-                ViewBag.QRCodeUri = IronBarcodeQR(model.encryptedData);
-            }
-            return View(model);
-        }
-        
+        }   
 
         public IActionResult Update(int id)
         {
@@ -208,28 +181,6 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
                 ViewBag.url = IronBarcodeQR(model.nonEncryptedData);
-            }
-            return View(model);
-        }
-
-        [HttpGet]
-        public IActionResult CreateQRCodeEncrypted(int id)
-        {
-            FillUsers();
-            Employee model = db.EmployeeQRTable.Find(id);
-            return View(model);
-        }
-
-        [HttpPost]
-        public IActionResult CreateQRCodeEncrypted(Employee model)
-        {
-            FillUsers();
-            if (ModelState.IsValid)
-            {
-                EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, SymetricKey, IV);
-                model.nonEncryptedData = EmployeeData;
-                ViewBag.url = IronBarcodeQR(model.encryptedData);
             }
             return View(model);
         }
