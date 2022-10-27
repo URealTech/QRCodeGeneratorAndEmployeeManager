@@ -14,6 +14,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         public string qrCodeTextString;
         public string EmployeeData;
         public string EmployeeDataNon;
+        public string symetricKey = "ePPhSSJIguIlaLys";
 
         private readonly IWebHostEnvironment _environment;
         private AppDbContext db = null;
@@ -22,61 +23,6 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         {
             this.db = _db;
             _environment = environment;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        private string Encrypt(string plainText, string Password, byte[] IV)
-        {
-            byte[] Key = System.Text.Encoding.UTF8.GetBytes(Password);
-
-            AesManaged aes = new AesManaged();
-            aes.Key = Key;
-            aes.IV = IV;
-
-            MemoryStream memoryStream = new MemoryStream();
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
-
-            byte[] InputBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            cryptoStream.Write(InputBytes, 0, InputBytes.Length);
-            cryptoStream.FlushFinalBlock();
-
-            byte[] Encrypted = memoryStream.ToArray();
-            return Convert.ToBase64String(Encrypted);
-        }
-
-        private string IronBarcodeQR(string dataText)
-        {
-
-                GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(dataText, "github.png", 300);
-                barcode.SetMargins(10);
-                barcode.ChangeBarCodeColor(Color.Goldenrod);
-                string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
-                barcode.SaveAsPng(filePath);
-                string fileName = Path.GetFileName(filePath);
-                string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
-                ViewBag.QRCodeUri = imageUrl;
-
-                return imageUrl;
         }
 
         private void FillUsers()
@@ -94,7 +40,9 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         [HttpGet]
         public IActionResult List()
         {
-            List<Employee> model = (from e in db.EmployeeQRTable orderby e.EmployeeID select e).ToList();
+            List<Employee> model = (from e in db.EmployeeQRTable 
+                                    orderby e.EmployeeID 
+                                    select e).ToList();
             return View(model);
         }
 
@@ -105,7 +53,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult Insert(Employee model, Key master)
+        public IActionResult Insert(Employee model)
         {
             FillUsers();
             if (ModelState.IsValid)
@@ -113,7 +61,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 db.EmployeeQRTable.Add(model);
 
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, symetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
 
         db.SaveChanges();
@@ -130,7 +78,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
             return View(model);
         }
         [HttpPost]
-        public IActionResult Update(Employee model, Key master)
+        public IActionResult Update(Employee model)
         {
             FillUsers();
             if (ModelState.IsValid)
@@ -138,7 +86,7 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
                 db.EmployeeQRTable.Update(model);
 
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, symetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
                 db.SaveChanges();
                 ViewBag.Message = "Employee updated succesfully";
@@ -171,17 +119,55 @@ namespace QRCodeGeneratorAndEmployeeManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateQRCode(Employee model, Key master)
+        public IActionResult CreateQRCode(Employee model)
         {
             FillUsers();
             if (ModelState.IsValid)
             {
                 EmployeeData += model.EmployeeName + " " + model.EmployeeLastName + " " + model.Phone;
-                model.encryptedData = Encrypt(EmployeeData, master.SymetricKey, IV);
+                model.encryptedData = Encrypt(EmployeeData, symetricKey, IV);
                 model.nonEncryptedData = EmployeeData;
                 ViewBag.url = IronBarcodeQR(model.nonEncryptedData);
             }
             return View(model);
+        }
+        private string Encrypt(string plainText, string Password, byte[] IV)
+        {
+            byte[] Key = System.Text.Encoding.UTF8.GetBytes(Password);
+
+            AesManaged aes = new AesManaged();
+            aes.Key = Key;
+            aes.IV = IV;
+
+            MemoryStream memoryStream = new MemoryStream();
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+
+            byte[] InputBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            cryptoStream.Write(InputBytes, 0, InputBytes.Length);
+            cryptoStream.FlushFinalBlock();
+
+            byte[] Encrypted = memoryStream.ToArray();
+            return Convert.ToBase64String(Encrypted);
+        }
+
+        private string IronBarcodeQR(string dataText)
+        {
+
+            GeneratedBarcode barcode = QRCodeWriter.CreateQrCodeWithLogo(dataText, "wwwroot/Logo/github.png", 300);
+            barcode.SetMargins(10);
+            barcode.ChangeBarCodeColor(Color.Goldenrod);
+            string path = Path.Combine(_environment.WebRootPath, "GeneratedQRCode");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            string filePath = Path.Combine(_environment.WebRootPath, "GeneratedQRCode/qrcodewithlogo.png");
+            barcode.SaveAsPng(filePath);
+            string fileName = Path.GetFileName(filePath);
+            string imageUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}" + "/GeneratedQRCode/" + fileName;
+            ViewBag.QRCodeUri = imageUrl;
+
+            return imageUrl;
         }
     }
 }

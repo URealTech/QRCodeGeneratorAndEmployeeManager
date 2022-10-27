@@ -24,11 +24,16 @@
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
+            <div class="form-group">
                 <label asp-for="encryptedData" class="control-label"></label>
                 <input asp-for="encryptedData" class="form-control" />
                 <span asp-validation-for="encryptedData" class="text-danger"></span>
-            </div> *@ 
+            </div>
+            <div class="form-group">
+                <label asp-for="nonEncryptedData" class="control-label"></label>
+                <input asp-for="nonEncryptedData" class="form-control" />
+                <span asp-validation-for="nonEncryptedData" class="text-danger"></span>
+            </div>
             <br />
             <div class="form-group">
                 <input type="submit" value="Take QRCode" class="btn btn-primary" />
